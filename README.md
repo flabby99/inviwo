@@ -1,3 +1,6 @@
+## My Clone of Inviwo
+Intended for use with https://github.com/flabby99/LF_View_Synthesis - see the README there for build and usage instructions.
+
 ## Inviwo - Interactive Visualization Workshop
 
 [![Build Status](http://jenkins.inviwo.org:8080/buildStatus/icon?job=inviwo-pub/master)](http://jenkins.inviwo.org:8080/job/inviwo-pub/job/master/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
