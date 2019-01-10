@@ -48,7 +48,9 @@ ShaderWarp::ShaderWarp()
     , outport_("output")
     , cameraBaseline_("cameraBaseline", "Camera Baseline", 0.5)
     , camera_("camera", "Camera") {
-    
+
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
     addPort(entryPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
 
@@ -56,43 +58,25 @@ ShaderWarp::ShaderWarp()
     addProperty(camera_);
 
     last_image_size_ = std::vector<size_t>(2, 0);
+}
 
-    // Initialise cuda resources
-    cv::cuda::setDevice (0);
+void ShaderWarp::initializeResources() {
+    utilgl::addDefines(shader_, camera_);
+    shader_.build();
 }
 
 void ShaderWarp::process() {
-    // bind the input texture
-    TextureUnit colorTexUnit;
-
-    if (entryPort_.isReady()) {
+    if (entryPort_.isChanged()) {
         utilgl::bindColorTexture(entryPort_, colorTexUnit);
-
-        size2_t input_size = entryPort_.getDimensions();
     
-        //Texture2D(int arows, int acols, Format aformat, 
-        //          unsigned int atexId, bool autoRelease = false);
-        //Make sure that the glEnum matches the unsigned int expected
-        ocvTexture_ = cv::ogl::Texture2D(
-            input_size[0], input_size[1], cv::ogl::Texture2D::Format::RGBA,
-            colorTexUnit.getEnum(), false
-        );
+        utilgl::activateAndClearTarget(outport_);
+        shader_.activate();
+        
+        TextureUnitContainer units;
+        utilgl::bindAndSetUniforms(shader_, units, )
 
-        if(input_size != last_image_size_) {
-            cudaTexture_ = cv::cuda::GpuMat(
-                input_size[0], input_size[1], CV_32FC1
-            );
-        }
-        ocvTexture_.copyTo(cudaTexture_);
-        last_image_size_ = input_size;
-
-        // Do the cuda warping
-        // TODO call this correctly
-        warp::cudaBackWarp(
-            // FILL
-        )
+        
     }
 
-    Image input_image = entryPort_.getData();
     
 }

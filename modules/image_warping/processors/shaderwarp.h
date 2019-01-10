@@ -93,11 +93,9 @@ protected:
     ImageOutport outport_;
 
     FloatProperty cameraBaseline_;
-
     CameraProperty camera_;
 
-private:
-    size2_t last_image_size_;
+    Shader shader_;
 };
 
 }  // namespace inviwo
