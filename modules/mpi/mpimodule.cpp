@@ -41,6 +41,7 @@ mpiModule::mpiModule(InviwoApplication* app) : InviwoModule(app, "mpi") {
 
     // Processors
     registerProcessor<MpiRayTracing>();
+    registerProcessor<OpencvCUDAWarp>();
     // registerProcessor<depthProcessor>();
 
     // Properties
