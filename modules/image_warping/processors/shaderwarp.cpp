@@ -31,7 +31,7 @@
 
 #include <image_warping/processors/shaderwarp.h>
 #include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture>
+#include <modules/opengl/texture/texture.h>
 
 #define PI_VALUE = 3.1415927
 
