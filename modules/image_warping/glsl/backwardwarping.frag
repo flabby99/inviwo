@@ -1,3 +1,6 @@
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+
 uniform ImageParameters disparityParameters;
 uniform sampler2D disparityColor;
 uniform sampler2D disparityDepth;
@@ -10,7 +13,7 @@ uniform float disparityScale_y;
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * disparityParameters.reciprocalDimensions;
-    float disparity = texture(entryDepth, texCoords).x;
+    float disparity = texture(disparityDepth, texCoords).x;
     float disparity_x = disparity * disparityScale_x;
     float disparity_y = disparity * disparityScale_x;
 
