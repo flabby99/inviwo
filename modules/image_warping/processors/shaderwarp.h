@@ -35,10 +35,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
@@ -86,7 +83,7 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    float ShaderWarp::getSensorSize()
+    float getSensorSize();
 
 protected:
     virtual void process() override;

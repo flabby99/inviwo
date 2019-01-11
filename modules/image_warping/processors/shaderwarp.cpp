@@ -31,9 +31,11 @@
 
 #include <modules/image_warping/processors/shaderwarp.h>
 #include <modules/opengl/openglutils.h>
-#include <modules/opengl/texture/texture.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#define PI_VALUE = 3.1415927
+#define PI_VALUE 3.1415927
 
 namespace inviwo {
 
@@ -49,14 +51,15 @@ const ProcessorInfo ShaderWarp::getProcessorInfo() const { return processorInfo_
 
 ShaderWarp::ShaderWarp()
     : Processor()
-    , shader_("backwardwarping.frag")
-    , depthShader_("depth_to_disparity.frag")
     , entryPort_("entry")
     , outport_("outport")
+    , disparity_()
     , cameraBaseline_("cameraBaseline", "Camera Baseline", 0.5)
     , disparityScale_x_("disparityScale_x", "Disparity Scale x", 0.0)
     , disparityScale_y_("disparityScale_y", "Disparity Scale y", 0.0)
-    , camera_("camera", "Camera") {
+    , camera_("camera", "Camera")
+    , shader_("backwardwarping.frag")
+    , depthShader_("depth_to_disparity.frag") {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
@@ -82,8 +85,8 @@ void ShaderWarp::initializeResources() {
 }
 
 float ShaderWarp::getSensorSize() {
-    float focal_length = camera_.getProjectionMatrix()[0][0];
-    float fov_radians = camera_.getFovy() * PI_VALUE / 180.0f;
+    float focal_length = camera_.projectionMatrix()[0][0];
+    float fov_radians = ((PerspectiveCamera) camera_.get()).getFovy() * PI_VALUE / 180.0f;
     float sensor_size = 2.0f * focal_length * tan(fov_radians);
     return sensor_size;
 }
@@ -91,8 +94,8 @@ float ShaderWarp::getSensorSize() {
 // TODO loop this
 void ShaderWarp::process() {
     // TODO check how often this happens - want it on resize
-    // May need a resize listener event for thi
-    if (outport_.isChanged()) {
+    // May need a resize listener event for this
+    if (entryPort_.isChanged()) {
         std::cout << "Outport has changed" << std::endl;
         disparity_ = Image(outport_.getDimensions(), outport_.getDataFormat());
 
@@ -115,8 +118,8 @@ void ShaderWarp::process() {
         utilgl::deactivateCurrentTarget();
 
         // Set up distances
-        float distance_x = -4;
-        float distance_y = -4;
+        float distance_x = -4.0f;
+        float distance_y = -4.0f;
         float sensor_size = getSensorSize();
         disparityScale_x_.set(distance_x / sensor_size);
         disparityScale_y_.set(distance_y / sensor_size);
@@ -134,6 +137,4 @@ void ShaderWarp::process() {
         shader_.deactivate();
         utilgl::deactivateCurrentTarget();
     }
-
-    
 }
