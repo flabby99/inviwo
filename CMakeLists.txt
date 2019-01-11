@@ -184,7 +184,6 @@ set(ivw_default_modules
     "OpenGL"
     "OpenGLQt"
     "PVM"
-    "MPI"
     "Nifti"
     "QtWidgets"
     "EigenUtils"
