@@ -31,7 +31,7 @@
 #ifndef IVW_SHADER_WARP_H
 #define IVW_SHADER_WARP_H
 
-#include <mpi/mpimoduledefine.h>
+#include <modules/image_warping/image_warpingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/processors/processor.h>

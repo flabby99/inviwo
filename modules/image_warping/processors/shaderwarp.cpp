@@ -29,7 +29,7 @@
 
 #include <math.h>
 
-#include <image_warping/processors/shaderwarp.h>
+#include <modules/image_warping/processors/shaderwarp.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/texture.h>
 
