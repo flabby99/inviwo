@@ -13,6 +13,7 @@ else
 	-D IVW_TINY_GLFW_APPLICATION=OFF \
 	-D IVW_TINY_QT_APPLICATION=ON \
 	-D IVW_MODULE_IMAGE_WARPING=1 \
+	-D IVW_MODULE_DEPTH=1 \
 	../inviwo
 	#8 indicates the number of cores to build with
 	make -j4
