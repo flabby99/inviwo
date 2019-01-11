@@ -38,7 +38,7 @@ image_warpingModule::image_warpingModule(InviwoApplication* app) : InviwoModule(
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
-     registerProcessor<ShaderWarp>();
+    registerProcessor<ShaderWarp>();
 
     // Properties
     // registerProperty<image_warpingProperty>();

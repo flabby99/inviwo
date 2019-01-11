@@ -86,7 +86,7 @@ void ShaderWarp::initializeResources() {
 
 float ShaderWarp::getSensorSize() {
     float focal_length = camera_.projectionMatrix()[0][0];
-    float fov_radians = ((PerspectiveCamera) camera_.get()).getFovy() * PI_VALUE / 180.0f;
+    float fov_radians = ((PerspectiveCamera*) (&camera_.get()))->getFovy() * PI_VALUE / 180.0f;
     float sensor_size = 2.0f * focal_length * tan(fov_radians);
     return sensor_size;
 }
@@ -129,7 +129,7 @@ void ShaderWarp::process() {
         shader_.activate();
         
         utilgl::bindAndSetUniforms(
-            shader_, units, disparity_, ImageType::ColorDepth);
+            shader_, units, disparity_, "disparity", ImageType::ColorDepth);
         utilgl::setUniforms(shader_, outport_, disparityScale_x_, disparityScale_y_);
 
         utilgl::singleDrawImagePlaneRect();
@@ -137,4 +137,5 @@ void ShaderWarp::process() {
         shader_.deactivate();
         utilgl::deactivateCurrentTarget();
     }
+}
 }
