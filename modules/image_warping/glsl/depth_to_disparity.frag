@@ -5,9 +5,11 @@
 uniform ImageParameters entryParameters;
 uniform sampler2D entryColor;
 uniform sampler2D entryDepth;
+uniform ImageParameters disparityParameters;
+
 uniform CameraParameters camera;
+
 uniform float cameraBaseline;
-uniform ImageParameters outportParameters;
 
 // This disparity is not in pixel units yet.
 float depth_to_disparity(float depth, CameraParameters camera, float baseline) {
@@ -22,7 +24,7 @@ float depth_to_disparity(float depth, CameraParameters camera, float baseline) {
 }
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec2 texCoords = gl_FragCoord.xy * disparityParameters.reciprocalDimensions;
     float depth = texture(entryDepth, texCoords).x;
 
     gl_FragDepth = depth_to_disparity(depth, camera, baseline);

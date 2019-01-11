@@ -86,16 +86,24 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    float ShaderWarp::getSensorSize()
+
 protected:
     virtual void process() override;
 
     ImageInport entryPort_;
     ImageOutport outport_;
 
+    Image disparity_;
+
     FloatProperty cameraBaseline_;
+    FloatProperty disparityScale_x_;        
+    FloatProperty disparityScale_y_;
+
     CameraProperty camera_;
 
     Shader shader_;
+    Shader depthShader_;
 };
 
 }  // namespace inviwo

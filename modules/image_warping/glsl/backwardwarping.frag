@@ -1,12 +1,22 @@
-uniform ImageParameters entryParameters;
-uniform sampler2D entryColor;
-uniform sampler2D entryDepth;
+uniform ImageParameters disparityParameters;
+uniform sampler2D disparityColor;
+uniform sampler2D disparityDepth;
 
 uniform ImageParameters outportParameters;
-uniform sampler2D exitColor;
 
-uniform CameraParameters camera;
+// distance is included in this
+uniform float disparityScale_x;
+uniform float disparityScale_y;
 
-uniform float cameraBaseline;
+void main() {
+    vec2 texCoords = gl_FragCoord.xy * disparityParameters.reciprocalDimensions;
+    float disparity = texture(entryDepth, texCoords).x;
+    float disparity_x = disparity * disparityScale_x;
+    float disparity_y = disparity * disparityScale_x;
 
-float disparity_from_coord(vec2 texCoords)
+    vec2 dimensions = disparityParameters.dimensions;
+    float coord_x = clamp(texCoords.x + disparity_x, 0, dimensions.x);
+    float coord_y = clamp(texCoords.y + disparity_y, 0, dimensions.y);
+
+    FragData0 = texture(disparityColor, vec2(coord_x, coord_y)); 
+}

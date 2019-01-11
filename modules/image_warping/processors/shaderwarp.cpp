@@ -27,8 +27,13 @@
  *
  *********************************************************************************/
 
+#include <math.h>
+
 #include <image_warping/processors/shaderwarp.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/texture>
+
+#define PI_VALUE = 3.1415927
 
 namespace inviwo {
 
@@ -44,9 +49,13 @@ const ProcessorInfo ShaderWarp::getProcessorInfo() const { return processorInfo_
 
 ShaderWarp::ShaderWarp()
     : Processor()
-    , entryPort_("input")
-    , outport_("output")
+    , shader_("backwardwarping.frag")
+    , depthShader_("depth_to_disparity.frag")
+    , entryPort_("entry")
+    , outport_("outport")
     , cameraBaseline_("cameraBaseline", "Camera Baseline", 0.5)
+    , disparityScale_x_("disparityScale_x", "Disparity Scale x", 0.0)
+    , disparityScale_y_("disparityScale_y", "Disparity Scale y", 0.0)
     , camera_("camera", "Camera") {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -56,26 +65,74 @@ ShaderWarp::ShaderWarp()
 
     addProperty(cameraBaseline_);
     addProperty(camera_);
+    addProperty(disparityScale_x_);
+    addProperty(disparityScale_y_);
+    disparityScale_x_.setReadOnly(true);
+    disparityScale_y_.setReadOnly(true);
 
-    last_image_size_ = std::vector<size_t>(2, 0);
+    disparity_ = Image(outport_.getDimensions(), outport_.getDataFormat());
 }
 
 void ShaderWarp::initializeResources() {
-    utilgl::addDefines(shader_, camera_);
+    // Add any defines here.
+
+    depthShader_.build();
+
     shader_.build();
 }
 
+float ShaderWarp::getSensorSize() {
+    float focal_length = camera_.getProjectionMatrix()[0][0];
+    float fov_radians = camera_.getFovy() * PI_VALUE / 180.0f;
+    float sensor_size = 2.0f * focal_length * tan(fov_radians);
+    return sensor_size;
+}
+
+// TODO loop this
 void ShaderWarp::process() {
-    if (entryPort_.isChanged()) {
-        utilgl::bindColorTexture(entryPort_, colorTexUnit);
-    
+    // TODO check how often this happens - want it on resize
+    // May need a resize listener event for thi
+    if (outport_.isChanged()) {
+        std::cout << "Outport has changed" << std::endl;
+        disparity_ = Image(outport_.getDimensions(), outport_.getDataFormat());
+
+    }
+    if (entryPort_.isReady()){    
+        
+        // Use shader to convert depth to disparity
+        
+        utilgl::activateAndClearTarget(disparity_);
+        depthShader_.activate();
+        
+        TextureUnitContainer units;   
+        utilgl::bindAndSetUniforms(
+            depthShader_, units, entryPort_, ImageType::ColorDepth);
+        utilgl::setUniforms(depthShader_, camera_, cameraBaseline_);
+        utilgl::setShaderUniforms(depthShader_, disparity_, "disparityParameters");
+        utilgl::singleDrawImagePlaneRect();
+        
+        depthShader_.deactivate();
+        utilgl::deactivateCurrentTarget();
+
+        // Set up distances
+        float distance_x = -4;
+        float distance_y = -4;
+        float sensor_size = getSensorSize();
+        disparityScale_x_.set(distance_x / sensor_size);
+        disparityScale_y_.set(distance_y / sensor_size);
+
+        // Do the backward warping
         utilgl::activateAndClearTarget(outport_);
         shader_.activate();
         
-        TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, )
+        utilgl::bindAndSetUniforms(
+            shader_, units, disparity_, ImageType::ColorDepth);
+        utilgl::setUniforms(shader_, outport_, disparityScale_x_, disparityScale_y_);
 
+        utilgl::singleDrawImagePlaneRect();
         
+        shader_.deactivate();
+        utilgl::deactivateCurrentTarget();
     }
 
     
