@@ -138,4 +138,10 @@ void ShaderWarp::process() {
         utilgl::deactivateCurrentTarget();
     }
 }
+
+void ShaderWarp::deserialize(Deserializer& d) {
+    util::renamePort(d, {{&entryPort_, "entry-points"}, });
+    Processor::deserialize(d);
+}
+
 }

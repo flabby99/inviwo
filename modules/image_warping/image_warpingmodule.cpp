@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <modules/image_warping/image_warpingmodule.h>
+#include <modules/opengl/shader/shadermanager.h>
+#include <modules/image_warping/processors/shaderwarp.h>
 
 namespace inviwo {
 
