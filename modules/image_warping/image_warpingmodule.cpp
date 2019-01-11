@@ -33,12 +33,12 @@ namespace inviwo {
 
 image_warpingModule::image_warpingModule(InviwoApplication* app) : InviwoModule(app, "image_warping") {
     // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
-    // registerProcessor<image_warpingProcessor>();
+     registerProcessor<ShaderWarp>();
 
     // Properties
     // registerProperty<image_warpingProperty>();
