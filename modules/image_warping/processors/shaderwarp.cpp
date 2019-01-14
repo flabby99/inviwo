@@ -118,8 +118,6 @@ void ShaderWarp::process() {
         float sensor_size = getSensorSize();
         disparityScale_x_ = (distance_x / sensor_size);
         disparityScale_y_ = (distance_y / sensor_size);
-        std::cout << disparityScale_x_.get() << std::endl;
-        std::cout << disparityScale_y_.get() << std::endl;
 
         // Do the backward warping
         utilgl::activateAndClearTarget(outport_);
