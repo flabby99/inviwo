@@ -54,9 +54,9 @@ ShaderWarp::ShaderWarp()
     , entryPort_("entry")
     , outport_("outport")
     , disparity_()
-    , cameraBaseline_("cameraBaseline", "Camera Baseline", 0.5)
-    , disparityScale_x_("disparityScale_x", "Disparity Scale x", 0.0)
-    , disparityScale_y_("disparityScale_y", "Disparity Scale y", 0.0)
+    , cameraBaseline_("cameraBaseline", "Camera Baseline", 0.5, 0, 2, 0.01)
+    , disparityScale_x_("disparityScale_x", "Disparity Scale x", 0.0, -10, 10, 0.01)
+    , disparityScale_y_("disparityScale_y", "Disparity Scale y", 0.0, -10, 10, 0.01)
     , camera_("camera", "Camera")
     , shader_("backwardwarping.frag")
     , depthShader_("depth_to_disparity.frag") {
@@ -87,23 +87,17 @@ void ShaderWarp::initializeResources() {
 float ShaderWarp::getSensorSize() {
     float focal_length = camera_.projectionMatrix()[0][0];
     float fov_radians = ((PerspectiveCamera*) (&camera_.get()))->getFovy() * PI_VALUE / 180.0f;
-    float sensor_size = 2.0f * focal_length * tan(fov_radians);
+    float sensor_size = 2.0f * focal_length * tan(fov_radians / 2.0f);
     return sensor_size;
 }
 
 // TODO loop this
 void ShaderWarp::process() {
-    // TODO check how often this happens - want it on resize
-    // May need a resize listener event for this
-    if (entryPort_.isChanged()) {
-        std::cout << "Outport has changed" << std::endl;
+    if (entryPort_.isReady()){    
+        //TODO only do this if the dimensions have changed
         disparity_ = Image(outport_.getDimensions(), outport_.getDataFormat());
 
-    }
-    if (entryPort_.isReady()){    
-        
         // Use shader to convert depth to disparity
-        
         utilgl::activateAndClearTarget(disparity_);
         depthShader_.activate();
         
@@ -121,8 +115,10 @@ void ShaderWarp::process() {
         float distance_x = -4.0f;
         float distance_y = -4.0f;
         float sensor_size = getSensorSize();
-        disparityScale_x_.set(distance_x / sensor_size);
-        disparityScale_y_.set(distance_y / sensor_size);
+        disparityScale_x_ = (distance_x / sensor_size);
+        disparityScale_y_ = (distance_y / sensor_size);
+        std::cout << disparityScale_x_.get() << std::endl;
+        std::cout << disparityScale_y_.get() << std::endl;
 
         // Do the backward warping
         utilgl::activateAndClearTarget(outport_);
