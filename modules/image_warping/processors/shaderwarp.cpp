@@ -86,8 +86,9 @@ void ShaderWarp::initializeResources() {
 
 float ShaderWarp::getSensorSize() {
     float focal_length = camera_.projectionMatrix()[0][0];
-    float fov_radians = ((PerspectiveCamera*) (&camera_.get()))->getFovy() * PI_VALUE / 180.0f;
-    float sensor_size = 2.0f * focal_length * tan(fov_radians / 2.0f);
+    float fov_degrees = ((PerspectiveCamera*) (&camera_.get()))->getFovy();
+    float fov_radians = (fov_degrees / 2) * PI_VALUE / 180.0f;
+    float sensor_size = 2.0f * focal_length * tan(fov_radians);
     return sensor_size;
 }
 
