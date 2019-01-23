@@ -26,24 +26,28 @@ def process(self):
             len(im_data), 2
         ))
         return -1
-    if not (im_data[0].dimensions == 
+    if not (im_data[0].dimensions ==
             im_data[1].dimensions):
         print("Operation is incompatible with images of different size")
         print("Size 1: ", im_data[0].dimensions)
         print("Size 2: ", im_data[1].dimensions)
         return -1
-    out_image = Image(im_data[0].dimensions, 
+    out_image = Image(im_data[0].dimensions,
                       inviwopy.data.formats.DataVec4UINT8)
     im_colour = []
-    for idx, name in enumerate(INPORT_LIST):
-        im_colour.append(im_data[idx].colorLayers[0].data)
-    
-    out_colour = get_diff_image(im_colour[0], im_colour[1])
-    out_image.colorLayers[0].data = out_colour
-   
+    im_picking = []
     im_depth = []
     for idx, name in enumerate(INPORT_LIST):
+        im_colour.append(im_data[idx].colorLayers[0].data)
+        im_picking.append(im_data[idx].picking.data)
         im_depth.append(im_data[idx].depth.data)
+
+
+    out_colour = get_diff_image(im_colour[0], im_colour[1])
+    out_image.colorLayers[0].data = out_colour
+
+    out_picking = get_diff_image(im_picking[0], im_picking[1])
+    out_image.picking.data = out_picking
 
     out_depth = get_diff_image(im_depth[0], im_depth[1], np.float32)
     out_image.depth.data = out_depth
